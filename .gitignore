@@ -1,0 +1,17 @@
+checkpoints/
+*.pt
+*.bin
+__pycache__/
+*.pyc
+.venv/
+venv/
+logs/
+*.log
+.cache/
+*.cache
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+nohup.out
+pegasus_download.log

@@ -1,0 +1,126 @@
+# Dialogue Summarization Configuration
+# =====================================
+
+# Model Configuration
+model:
+  # Base model from Hugging Face Hub
+  name: "google/pegasus-cnn_dailymail"
+  # Alternative: "google/pegasus-xsum" for more abstractive summaries
+  
+  # Sequence length limits
+  max_input_length: 1024
+  max_target_length: 128
+  
+  # Generation parameters
+  generation:
+    num_beams: 4
+    length_penalty: 2.0
+    early_stopping: true
+    no_repeat_ngram_size: 3
+    min_length: 10
+    max_length: 128
+
+# Dataset Configuration
+data:
+  name: "samsum"
+  # Column mappings
+  dialogue_column: "dialogue"
+  summary_column: "summary"
+  # Preprocessing
+  remove_special_chars: false
+  lowercase: false
+  # Cache settings
+  cache_dir: "./cache"
+  preprocessing_num_workers: 4
+
+# Training Configuration
+training:
+  # Output paths
+  output_dir: "./checkpoints"
+  logging_dir: "./logs"
+  
+  # Training hyperparameters
+  epochs: 5
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  
+  # Learning rate scheduler
+  scheduler:
+    type: "linear"  # linear, cosine, cosine_with_restarts
+    warmup_steps: 500
+    warmup_ratio: 0.1
+  
+  # Optimization
+  optimizer: "adamw"
+  adam_epsilon: 1.0e-8
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  
+  # Mixed precision training
+  fp16: true
+  fp16_opt_level: "O1"
+  
+  # Checkpointing
+  save_strategy: "epoch"
+  save_total_limit: 3
+  load_best_model_at_end: true
+  
+  # Evaluation during training
+  evaluation_strategy: "epoch"
+  eval_steps: 500
+  
+  # Logging
+  logging_steps: 100
+  report_to: ["tensorboard"]
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 3
+    threshold: 0.001
+
+# Evaluation Configuration
+evaluation:
+  # Metrics to compute
+  metrics:
+    - "rouge1"
+    - "rouge2"
+    - "rougeL"
+    - "rougeLsum"
+  
+  # Generation settings for evaluation
+  num_beams: 4
+  batch_size: 8
+  
+  # Output settings
+  save_predictions: true
+  predictions_file: "predictions.json"
+
+# Inference Configuration
+inference:
+  # Model loading
+  device: "auto"  # auto, cpu, cuda, cuda:0
+  load_in_8bit: false
+  
+  # Generation parameters
+  num_beams: 4
+  do_sample: false
+  temperature: 1.0
+  top_k: 50
+  top_p: 0.95
+  
+  # Batch processing
+  batch_size: 16
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "training.log"
+
+# Random Seeds for Reproducibility
+seed: 42
+deterministic: true
